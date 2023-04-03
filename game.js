@@ -73,4 +73,46 @@ function game() {
 
 }
 
-game()
+const buttonContainer = document.querySelector('.button-container');
+const resultsContainer = document.querySelector('.results')
+
+let playerScore = 0;
+let computerScore = 0;
+let gameCount = 0
+
+for (rps of ['rock','paper','scissors']) {
+    let rpsButton = document.createElement('button');
+    rpsButton.classList.add(rps);
+    rpsButton.textContent = rps;
+    buttonContainer.appendChild(rpsButton);
+
+    //use an IIFE (Immediately Invoked Function Expression) to add an event listener to each button. This
+    //ensures that each event listener callback function has its own scope so it doesn't reference the rps from the outer scope.
+    rpsButton.addEventListener('click', (function(rps) {
+        return function() {
+            let resultsDiv = document.createElement('div');
+            let result = paperScissorsRock(rps,getComputerChoice());
+
+            playerScore += result[0];
+            computerScore += result[1];
+            gameCount += 1;
+
+            if (gameCount == 5 || playerScore == 3 || computerScore == 3) {
+                while (buttonContainer.firstChild) {
+                    buttonContainer.removeChild(buttonContainer.firstChild);   
+                }
+                if (playerScore > computerScore) {
+                    resultsDiv.textContent =result[2]+'\n You won the best of five!'+`The score was ${playerScore} - ${computerScore}.`;
+                }
+                else {
+                    resultsDiv.textContent =result[2]+'\n You lost the best of five!'+`The score was ${playerScore} - ${computerScore}.`;
+                }  
+            } else {
+                resultsDiv.textContent = result[2];
+            }
+
+            resultsContainer.appendChild(resultsDiv);
+
+        };
+    })(rps));
+}
